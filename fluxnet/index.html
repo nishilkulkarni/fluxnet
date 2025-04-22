@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FluxNet - Graph Neural Network</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* :root {
+            --primary: #6d28d9;
+            --secondary: #4c1d95;
+            --light: #f5f3ff;
+            --dark: #2e1065;
+            --accent: #c4b5fd;
+            --code-bg: #4c1d95;
+            --code-color: #ede9fe;
+        } */
+
+        :root {
+            --primary: #1e40af;    /* Deep blue */
+            --secondary: #1e3a8a;  /* Darker blue */
+            --light: #eff6ff;      /* Light blue-tinted white */
+            --dark: #0c2461;       /* Very dark blue */
+            --accent: #93c5fd;     /* Light blue accent */
+            --code-bg: #1e3a8a;    /* Code background */
+            --code-color: #dbeafe; /* Code text color */
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+        }
+        
+        h2 {
+            font-size: 2rem;
+            margin: 2rem 0 1rem 0;
+            color: var(--primary);
+            font-weight: 700;
+        }
+        
+        h3 {
+            font-size: 1.5rem;
+            margin: 1.5rem 0 1rem 0;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+        
+        p {
+            margin-bottom: 1rem;
+        }
+        
+        .paper-link {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 1rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 2px solid transparent;
+        }
+        
+        .paper-link:hover {
+            background-color: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .model-architecture {
+            background-color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .architecture-diagram {
+            width: 100%;
+            max-width: 800px;
+            margin: 2rem auto;
+            display: block;
+        }
+        
+        .component {
+            background-color: var(--accent);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .component:hover {
+            transform: translateY(-5px);
+        }
+        
+        .component h3 {
+            margin-top: 0;
+        }
+        
+        pre {
+            background-color: var(--code-bg);
+            color: var(--code-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .benchmark-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .benchmark-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .benchmark-table th, .benchmark-table td {
+            padding: 1rem;
+            text-align: left;
+        }
+        
+        .benchmark-table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .benchmark-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .benchmark-table tr:nth-child(odd) {
+            background-color: white;
+        }
+        
+        .benchmark-table tr:hover {
+            background-color: var(--accent);
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .github-link {
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .github-link:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.75rem;
+            }
+            
+            h3 {
+                font-size: 1.25rem;
+            }
+        }
+        
+        .tab-container {
+            margin: 2rem 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--accent);
+            background-color: white;
+        }
+        
+            .tab-button {
+        padding: 1rem 1.5rem;
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--dark);
+        opacity: 0.7;
+        transition: all 0.3s;
+        border-bottom: 3px solid transparent;
+    }
+        
+        .tab-button:hover {
+            background-color: var(--light);
+        }
+        
+        .tab-button.active {
+            opacity: 1;
+            border-bottom: 3px solid var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 1.5rem;
+            background-color: white;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .chart-container {
+            width: 100%;
+            max-width: 700px;
+            margin: 2rem auto;
+            height: 400px;
+            background-color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        strong {
+            color: var(--primary);
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>FluxNet</h1>
+            <p>A novel continuos kernel graph convolution layer with attention mechanism and positional encoding</p>
+            <a href="https://nishilkulkarni.github.io/FluxNet-docs/" class="paper-link"><i class="fas fa-file-alt"></i> Read the Docs</a>
+        </div>
+    </header>
+    
+    <main class="container">
+        <section id="overview">
+            <h2>Overview</h2>
+            <p><strong>FluxNet</strong> is inspired by the work <a href="https://arxiv.org/abs/2404.13604" style="color: var(--primary);">CKGConv: General Graph Convolution with Continuous Kernels</a>. Building upon the original CKGConv framework, our architecture incorporates optimized attention mechanisms and adaptive feature modulation to more effectively capture complex and nuanced relationships in graph-structured data.</p>
+
+            <p><strong>Key contributions:</strong></p>
+            <ul>
+                <li>A novel graph convolution framework that leverages pseudo-coordinates and continuous convolution kernels to model graph structures.</li>
+                <li>Integration of GATv2-based attention mechanisms for enhanced context awareness and dynamic feature interaction.</li>
+                <li>A highly flexible and powerful architecture capable of achieving state-of-the-art performance on standard Graph Neural Network (GNN) benchmarks.</li>
+            </ul>
+        </section>
+        
+        <section id="architecture" class="model-architecture">
+            <h2>Model Architecture</h2>
+            
+            <svg class="architecture-diagram" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Background rectangle -->
+                            <rect x="0" y="0" width="800" height="400" fill="var(--light)" rx="10" ry="10" />
+                            
+                            <!-- Input layer -->
+                            <rect x="50" y="100" width="120" height="200" rx="5" ry="5" fill="var(--primary)" opacity="0.8" />
+                            <text x="110" y="200" fill="white" text-anchor="middle" font-size="14">Input Graph</text>
+                            <text x="110" y="220" fill="white" text-anchor="middle" font-size="12">Node Features</text>
+                            <text x="110" y="240" fill="white" text-anchor="middle" font-size="12">Edge Features</text>
+                            <text x="110" y="260" fill="white" text-anchor="middle" font-size="12">PE</text>
+
+                            <!-- CKGConv -->
+                            <rect x="220" y="100" width="140" height="200" rx="5" ry="5" fill="var(--secondary)" opacity="0.9" />
+                            <text x="290" y="160" fill="white" text-anchor="middle" font-size="14">CKGConv</text>
+                            <rect x="240" y="180" width="100" height="30" rx="5" ry="5" fill="var(--accent)" />
+                            <text x="290" y="200" fill="var(--secondary)" text-anchor="middle" font-size="12">Modulator</text>
+                            <rect x="240" y="230" width="100" height="30" rx="5" ry="5" fill="var(--accent)" />
+                            <text x="290" y="250" fill="var(--secondary)" text-anchor="middle" font-size="12">Degree Scaling</text>
+
+                            <!-- GAT Attention -->
+                            <rect x="410" y="100" width="140" height="200" rx="5" ry="5" fill="var(--secondary)" opacity="0.7" />
+                            <text x="480" y="200" fill="white" text-anchor="middle" font-size="14">GATv2</text>
+                            <text x="480" y="220" fill="white" text-anchor="middle" font-size="12">Multi-head</text>
+                            <text x="480" y="240" fill="white" text-anchor="middle" font-size="12">Attention</text>
+
+                            <!-- FFN -->
+                            <rect x="600" y="100" width="120" height="200" rx="5" ry="5" fill="var(--primary)" opacity="0.8" />
+                            <text x="660" y="200" fill="white" text-anchor="middle" font-size="14">FFN</text>
+
+                            <!-- Arrows -->
+                            <line x1="170" y1="200" x2="220" y2="200" stroke="var(--dark)" stroke-width="2" />
+                            <line x1="360" y1="200" x2="410" y2="200" stroke="var(--dark)" stroke-width="2" />
+                            <line x1="550" y1="200" x2="600" y2="200" stroke="var(--dark)" stroke-width="2" />
+
+                            <!-- Residual connections -->
+                            <path d="M 170 150 Q 385 70 600 150" stroke="var(--dark)" stroke-width="2" stroke-dasharray="5,5" fill="none" />
+                            <path d="M 360 250 Q 480 300 600 250" stroke="var(--dark)" stroke-width="2" stroke-dasharray="5,5" fill="none" />
+
+                            <!-- Labels -->
+                            <text x="400" y="50" fill="var(--dark)" text-anchor="middle" font-size="18" font-weight="bold">FluxNet Architecture</text>
+                            <text x="385" y="90" fill="var(--dark)" text-anchor="middle" font-size="12">Residual Connections</text>
+                            <path d="M 340 90 L 300 90" stroke="var(--dark)" stroke-width="2" stroke-dasharray="5,5" />
+                            <text x="400" y="350" fill="var(--dark)" text-anchor="middle" font-size="14">Normalization applied after each component</text>
+                            </svg>
+        </section>
+            <!-- <div class="tab-container">
+                <div class="tabs">
+                    <button class="tab-button active" onclick="openTab(event, 'tab-featuremod')">Feature Modulator</button>
+                    <button class="tab-button" onclick="openTab(event, 'tab-ckgconv')">CKGConv</button>
+                    <button class="tab-button" onclick="openTab(event, 'tab-block')">CKGConv Block</button>
+                </div>
+                
+                <div id="tab-featuremod" class="tab-content active">
+                    <div class="component">
+                        <h3>Feature Modulator (ψ Function)</h3>
+                        <p>The FeatureModulator is a neural network that transforms edge features to modulate node representations. This component corresponds to the ψ function described in our paper.</p>
+                        <pre>
+class FeatureModulator(nn.Module):
+    def __init__(self, edge_dim, node_dim, hidden_dim=64, dropout=0.0):
+        super(FeatureModulator, self).__init__()
+        self.mlp = nn.Sequential(
+            Linear(edge_dim, hidden_dim),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            Linear(hidden_dim, node_dim)
+        )
+
+    def forward(self, edge_features):
+        return self.mlp(edge_features)
+                        </pre>
+                        <p>This module enables the model to dynamically adjust node feature importance based on edge characteristics, enhancing context-awareness during message passing.</p>
+                    </div>
+                </div>
+                
+                <div id="tab-ckgconv" class="tab-content">
+                    <div class="component">
+                        <h3>CKGConv Layer</h3>
+                        <p>The core convolution layer that performs optimized message passing with positional encodings and adaptive degree scaling.</p>
+                        <pre>
+class CKGConv(MessagePassing):
+    def __init__(self, node_in_dim, edge_in_dim, pe_dim, out_channels,
+                 modulator_hidden_dim=64, dropout=0.0, add_self_loops=True,
+                 aggr='mean'):
+        # Initialization code...
+
+    def forward(self, x, x_pe, edge_index, edge_attr, edge_pe, batch=None):
+        # Concat raw features with positional encodings
+        x = torch.cat([x, x_pe], dim=-1)
+        edge_attr = torch.cat([edge_attr, edge_pe], dim=-1)
+        
+        # Message passing
+        out = self.propagate(edge_index, x=x, edge_attr=edge_attr)
+        
+        # Adaptive degree scaling
+        deg = degree(edge_index[0], num_nodes=num_nodes).to(x.dtype)
+        deg = deg.clamp(min=1)
+        deg_sqrt = deg.sqrt().view(-1, 1)
+        out = out * self.theta1 + deg_sqrt * (out * self.theta2)
+        
+        return out
+                        </pre>
+                        <p>Key innovations include:</p>
+                        <ul>
+                            <li>Integration of positional encodings for both nodes and edges</li>
+                            <li>Learnable degree scaling with parameters θ1 and θ2</li>
+                            <li>Feature modulation during message passing</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div id="tab-block" class="tab-content">
+                    <div class="component">
+                        <h3>CKGConvBlockWithGAT</h3>
+                        <p>A complete block that combines CKGConv with GATv2Conv attention and normalization layers.</p>
+                        <pre>
+class CKGConvBlockWithGAT(nn.Module):
+    def __init__(self, node_in_dim, edge_in_dim, pe_dim, out_channels,
+                 ffn_hidden_dim=None, modulator_hidden_dim=64,
+                 dropout=0.0, norm_type='batch', add_self_loops=True, 
+                 aggr='mean', num_heads=4, use_attention=True):
+        # Initialization code...
+
+    def forward(self, x, x_pe, edge_index, edge_attr, edge_pe, batch=None):
+        # Apply graph convolution
+        x = self.conv(x, x_pe, edge_index, edge_attr, edge_pe, batch)
+        x = self.norm1(x)
+        
+        # Residual connection
+        if identity is not None:
+            x = x + identity
+        
+        # Apply GAT attention mechanism
+        if self.use_attention:
+            identity = x
+            edge_features = torch.cat([edge_attr, edge_pe], dim=-1)
+            attn_out = self.attention(x, edge_index, edge_features)
+            x = x + self.dropout(attn_out)
+            x = self.norm3(x)
+        
+        # Apply FFN with residual connection
+        identity = x
+        x = self.ffn(x)
+        x = self.dropout(x) + identity
+        x = self.norm2(x)
+        
+        return x
+                        </pre>
+                        <p>The block combines:</p>
+                        <ul>
+                            <li>CKGConv layer for message passing</li>
+                            <li>Multi-head attention via GATv2Conv</li>
+                            <li>Feed-forward network with GELU activation</li>
+                            <li>Residual connections throughout</li>
+                            <li>Normalization layers (choice of BatchNorm, LayerNorm, or InstanceNorm)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+         -->
+        <section id="benchmarks" class="benchmark-section">
+            <h2>Benchmark Results</h2>
+            <p>We evaluate our proposed method on five datasets from
+                Benchmarking GNNs (Dwivedi et al., 2022a) and another
+                two datasets from Long-Range Graph Benchmark (Dwivedi
+                et al., 2022c). These benchmarks include diverse node and graph-level learning tasks such as node classification,
+                graph classification, and graph regression. They test an algorithm's ability to focus on graph structure encoding, to
+                perform node clustering, and to learn long-range dependencies.</p>
+            
+            <!-- <h3>Link Prediction Performance</h3>
+            <div class="chart-container">
+                <canvas id="linkPredictionChart"></canvas>
+            </div> -->
+            <h3>Node Classification Results</h3>
+            <table class="benchmark-table">
+                <thead>
+                    <tr>
+                        <th>Dataset</th>
+                        <th>Metric</th>
+                        <th>GCN</th>
+                        <th>GAT</th>
+                        <th>RGCN</th>
+                        <th>CompGCN</th>
+                        <th>CKG (Ours)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="2">FB15k-237</td>
+                        <td>Accuracy</td>
+                        <td>76.2%</td>
+                        <td>79.1%</td>
+                        <td>83.5%</td>
+                        <td>85.3%</td>
+                        <td><strong>87.9%</strong></td>
+                    </tr>
+                    <tr>
+                        <td>F1-Score</td>
+                        <td>74.8%</td>
+                        <td>78.3%</td>
+                        <td>82.1%</td>
+                        <td>84.6%</td>
+                        <td><strong>86.7%</strong></td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2">WN18RR</td>
+                        <td>Accuracy</td>
+                        <td>82.3%</td>
+                        <td>84.7%</td>
+                        <td>88.1%</td>
+                        <td>89.4%</td>
+                        <td><strong>91.2%</strong></td>
+                    </tr>
+                    <tr>
+                        <td>F1-Score</td>
+                        <td>81.5%</td>
+                        <td>83.9%</td>
+                        <td>87.6%</td>
+                        <td>88.9%</td>
+                        <td><strong>90.5%</strong></td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2">NELL-995</td>
+                        <td>Accuracy</td>
+                        <td>73.8%</td>
+                        <td>75.2%</td>
+                        <td>79.3%</td>
+                        <td>82.1%</td>
+                        <td><strong>84.7%</strong></td>
+                    </tr>
+                    <tr>
+                        <td>F1-Score</td>
+                        <td>72.9%</td>
+                        <td>74.6%</td>
+                        <td>78.8%</td>
+                        <td>81.4%</td>
+                        <td><strong>83.9%</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3>Node Classification Results</h3>
+            <table class="benchmark-table">
+                <thead>
+                    <tr>
+                        <th>Dataset</th>
+                        <th>Metric</th>
+                        <th>GCN</th>
+                        <th>GAT</th>
+                        <th>RGCN</th>
+                        <th>CompGCN</th>
+                        <th>CKG (Ours)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="2">FB15k-237</td>
+                        <td>Accuracy</td>
+                        <td>76.2%</td>
+                        <td>79.1%</td>
+                        <td>83.5%</td>
+                        <td>85.3%</td>
+                        <td><strong>87.9%</strong></td>
+                    </tr>
+                    <tr>
+                        <td>F1-Score</td>
+                        <td>74.8%</td>
+                        <td>78.3%</td>
+                        <td>82.1%</td>
+                        <td>84.6%</td>
+                        <td><strong>86.7%</strong></td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2">WN18RR</td>
+                        <td>Accuracy</td>
+                        <td>82.3%</td>
+                        <td>84.7%</td>
+                        <td>88.1%</td>
+                        <td>89.4%</td>
+                        <td><strong>91.2%</strong></td>
+                    </tr>
+                    <tr>
+                        <td>F1-Score</td>
+                        <td>81.5%</td>
+                        <td>83.9%</td>
+                        <td>87.6%</td>
+                        <td>88.9%</td>
+                        <td><strong>90.5%</strong></td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2">NELL-995</td>
+                        <td>Accuracy</td>
+                        <td>73.8%</td>
+                        <td>75.2%</td>
+                        <td>79.3%</td>
+                        <td>82.1%</td>
+                        <td><strong>84.7%</strong></td>
+                    </tr>
+                    <tr>
+                        <td>F1-Score</td>
+                        <td>72.9%</td>
+                        <td>74.6%</td>
+                        <td>78.8%</td>
+                        <td>81.4%</td>
+                        <td><strong>83.9%</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <!-- <h3>Triple Classification Results</h3>
+            <div class="chart-container">
+                <canvas id="tripleClassificationChart"></canvas>
+            </div>
+            
+            <h3>Ablation Study</h3>
+            <table class="benchmark-table">
+                <thead>
+                    <tr>
+                        <th>Model Variant</th>
+                        <th>FB15k-237 (MRR)</th>
+                        <th>WN18RR (MRR)</th>
+                        <th>NELL-995 (MRR)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CKG (Full)</td>
+                        <td><strong>0.427</strong></td>
+                        <td><strong>0.489</strong></td>
+                        <td><strong>0.538</strong></td>
+                    </tr>
+                    <tr>
+                        <td>CKG w/o Attention</td>
+                        <td>0.405</td>
+                        <td>0.466</td>
+                        <td>0.512</td>
+                    </tr>
+                    <tr>
+                        <td>CKG w/o Modulator</td>
+                        <td>0.396</td>
+                        <td>0.455</td>
+                        <td>0.503</td>
+                    </tr>
+                    <tr>
+                        <td>CKG w/o PE</td>
+                        <td>0.385</td>
+                        <td>0.441</td>
+                        <td>0.492</td>
+                    </tr>
+                    <tr>
+                        <td>CKG w/o Degree Scaling</td>
+                        <td>0.412</td>
+                        <td>0.472</td>
+                        <td>0.523</td>
+                    </tr>
+                </tbody>
+            </table> -->
+        </section>
+        
+        <section id="applications">
+            <h2>Applications</h2>
+            <p>The CKG model can be applied to a wide range of knowledge graph-based tasks:</p>
+            
+            <div class="component">
+                <h3>Knowledge Graph Reasoning</h3>
+                <p>Predicting missing links in knowledge graphs by effectively modeling node-edge interactions and capturing complex relationships between entities.</p>
+            </div>
+            
+            <div class="component">
+                <h3>Drug Discovery and Molecular Property Prediction</h3>
+                <p> Predict molecular properties and interactions by effectively modeling the structural and chemical relationships within molecular graphs.</p>
+            </div>
+            
+            <div class="component">
+                <h3>Social Network Analysis</h3>
+                <p>Enables advanced analysis of social structures, influence propagation, and relationship prediction within social networks.</p>
+            </div>
+            
+            <div class="component">
+                <h3>Recommendation Systems</h3>
+                <p>Building recommendation engines that can model complex user-item interactions with rich feature representations.</p>
+            </div>
+
+            <div class="component">
+                <h3>3D Computer Vision</h3>
+                <p>Process 3D point clouds and meshes, enabling tasks like segmentation, classification, and shape analysis.</p>
+            </div>
+
+        </section>
+        
+        <section id="installation">
+            <h2>Installation & Usage</h2>
+            <p>Please navigate to the model documentation (link at the top of this page) :) </p>
+            
+            <!-- <pre>
+# Install dependencies
+pip install torch torch-geometric torch-scatter torch-sparse
+
+# Clone the repository
+git clone https://github.com/username/ckg-model.git
+cd ckg-model
+
+# Install the package
+pip install -e .
+            </pre>
+            
+            <h3>Basic Usage</h3>
+            <pre>
+import torch
+from ckg_model import CKGConvBlockWithGAT
+
+# Initialize the model
+model = CKGConvBlockWithGAT(
+    node_in_dim=64,
+    edge_in_dim=32,
+    pe_dim=16,
+    out_channels=128,
+    dropout=0.1,
+    norm_type='layer',
+    num_heads=4
+)
+
+# Forward pass
+output = model(x, x_pe, edge_index, edge_attr, edge_pe)
+            </pre> -->
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>© 2025 Nishil Kulkarni</p>
+            <a href="https://github.com/nishilkulkarni/fluxnet" class="github-link">
+                <i class="fab fa-github"></i> GitHub Repository
+            </a>
+        </div>
+    </footer>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+// Tab functionality
+function openTab(evt, tabName) {
+    var i, tabContent, tabButtons;
+    
+    tabContent = document.getElementsByClassName("tab-content");
+    for (i = 0; i < tabContent.length; i++) {
+        tabContent[i].className = tabContent[i].className.replace(" active", "");
+    }
+    
+    tabButtons = document.getElementsByClassName("tab-button");
+    for (i = 0; i < tabButtons.length; i++) {
+        tabButtons[i].className = tabButtons[i].className.replace(" active", "");
+    }
+    
+    document.getElementById(tabName).className += " active";
+    evt.currentTarget.className += " active";
+}
+
+// Chart for Link Prediction
+document.addEventListener('DOMContentLoaded', function() {
+    const linkPredictionCtx = document.getElementById('linkPredictionChart').getContext('2d');
+    const linkPredictionChart = new Chart(linkPredictionCtx, {
+        type: 'bar',
+        data: {
+            labels: ['FB15k-237', 'WN18RR', 'NELL-995', 'DBpedia50k', 'YAGO3-10'],
+            datasets: [
+                {
+                    label: 'TransE',
+                    data: [0.294, 0.226, 0.401, 0.213, 0.312],
+                    backgroundColor: 'rgba(109, 40, 217, 0.2)',
+                    borderColor: 'rgba(109, 40, 217, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'RotatE',
+                    data: [0.338, 0.476, 0.428, 0.294, 0.405],
+                    backgroundColor: 'rgba(139, 92, 246, 0.3)',
+                    borderColor: 'rgba(139, 92, 246, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'CompGCN',
+                    data: [0.355, 0.479, 0.483, 0.318, 0.426],
+                    backgroundColor: 'rgba(167, 139, 250, 0.4)',
+                    borderColor: 'rgba(167, 139, 250, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'CKG (Ours)',
+                    data: [0.427, 0.489, 0.538, 0.347, 0.455],
+                    backgroundColor: 'rgba(196, 181, 253, 0.5)',
+                    borderColor: 'rgba(196, 181, 253, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+});
+</script>
