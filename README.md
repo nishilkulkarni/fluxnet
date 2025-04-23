@@ -20,7 +20,7 @@ FluxNet is a specialized graph neural network architecture that combines continu
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/fluxnet.git
+git clone https://github.com/nishilkulkarni/fluxnet.git
 cd fluxnet
 
 # Create a virtual environment (optional but recommended)
@@ -92,7 +92,7 @@ See the `examples/` directory for usage examples on various graph learning tasks
 If you use FluxNet in your research, please cite our work:
 
 ```bibtex
-@article{your2025fluxnet,
+@article{nishil2025fluxnet,
   title={FluxNet: Continuous Kernel Graph Convolutions with Multi-Head Attention},
   author={Nishil Kulkarni},
   journal={arXiv preprint arXiv:2504.xxxxx},
