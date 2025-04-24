@@ -314,7 +314,7 @@
             <ul>
                 <li>A novel graph convolution framework that leverages pseudo-coordinates and continuous convolution kernels to model graph structures.</li>
                 <li>Integration of GATv2-based attention mechanisms for enhanced context awareness and dynamic feature interaction.</li>
-                <li>A highly flexible and powerful architecture capable of achieving state-of-the-art performance on standard Graph Neural Network (GNN) benchmarks.</li>
+                <li>A highly flexible and efficient architecture that achieves state-of-the-art performance on Long-Range Graph Benchmark (LRGB) tasks, offering an excellent balance between accuracy and computational efficiency.</li>
             </ul>
         </section>
         
@@ -494,137 +494,90 @@ class CKGConvBlockWithGAT(nn.Module):
             <div class="chart-container">
                 <canvas id="linkPredictionChart"></canvas>
             </div> -->
-            <h3>Node Classification Results</h3>
+            <h3>Graph Benchmark Results</h3>
             <table class="benchmark-table">
                 <thead>
                     <tr>
                         <th>Dataset</th>
                         <th>Metric</th>
                         <th>GCN</th>
+                        <th>GIN</th>
                         <th>GAT</th>
-                        <th>RGCN</th>
-                        <th>CompGCN</th>
-                        <th>CKG (Ours)</th>
+                        <th>GRIT</th>
+                        <th>FluxNet</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td rowspan="2">FB15k-237</td>
+                        <td rowspan="2">MNIST</td>
                         <td>Accuracy</td>
-                        <td>76.2%</td>
-                        <td>79.1%</td>
-                        <td>83.5%</td>
-                        <td>85.3%</td>
-                        <td><strong>87.9%</strong></td>
+                        <td>90.70%</td>
+                        <td>96.48%</td>
+                        <td>95.53%</td>
+                        <td>98.10%</td>
+                        <td><strong>98.42%</strong></td>
                     </tr>
                     <tr>
-                        <td>F1-Score</td>
-                        <td>74.8%</td>
-                        <td>78.3%</td>
-                        <td>82.1%</td>
-                        <td>84.6%</td>
-                        <td><strong>86.7%</strong></td>
-                    </tr>
-                    <tr>
-                        <td rowspan="2">WN18RR</td>
+                        <td rowspan="2">CIFAR10</td>
                         <td>Accuracy</td>
-                        <td>82.3%</td>
-                        <td>84.7%</td>
-                        <td>88.1%</td>
-                        <td>89.4%</td>
-                        <td><strong>91.2%</strong></td>
+                        <td>55.71%</td>
+                        <td>55.25%</td>
+                        <td>64.22%</td>
+                        <td>76.46%</td>
+                        <td><strong>72.78%</strong></td>
                     </tr>
                     <tr>
-                        <td>F1-Score</td>
-                        <td>81.5%</td>
-                        <td>83.9%</td>
-                        <td>87.6%</td>
-                        <td>88.9%</td>
-                        <td><strong>90.5%</strong></td>
+                        <td rowspan="2">PATTERN</td>
+                        <td>W. Accuracy</td>
+                        <td>71.89%</td>
+                        <td>85.38%</td>
+                        <td>78.27%</td>
+                        <td>87.19%</td>
+                        <td><strong>88.66%</strong></td>
                     </tr>
                     <tr>
-                        <td rowspan="2">NELL-995</td>
-                        <td>Accuracy</td>
-                        <td>73.8%</td>
-                        <td>75.2%</td>
-                        <td>79.3%</td>
-                        <td>82.1%</td>
-                        <td><strong>84.7%</strong></td>
+                        <td rowspan="2">CLUSTER</td>
+                        <td>W. Accuracy</td>
+                        <td>68.49%</td>
+                        <td>64.71%</td>
+                        <td>70.58%</td>
+                        <td>80.02%</td>
+                        <td><strong>79.00%</strong></td>
                     </tr>
-                    <tr>
-                        <td>F1-Score</td>
-                        <td>72.9%</td>
-                        <td>74.6%</td>
-                        <td>78.8%</td>
-                        <td>81.4%</td>
-                        <td><strong>83.9%</strong></td>
-                    </tr>
+
                 </tbody>
             </table>
-            <h3>Node Classification Results</h3>
+            <h3>Long Range Grpah Benchmark Results</h3>
             <table class="benchmark-table">
                 <thead>
                     <tr>
                         <th>Dataset</th>
                         <th>Metric</th>
                         <th>GCN</th>
-                        <th>GAT</th>
-                        <th>RGCN</th>
-                        <th>CompGCN</th>
-                        <th>CKG (Ours)</th>
+                        <th>GINE</th>
+                        <th>GatedGCN</th>
+                        <th>GRIT</th>
+                        <th>FluxNet</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td rowspan="2">FB15k-237</td>
-                        <td>Accuracy</td>
-                        <td>76.2%</td>
-                        <td>79.1%</td>
-                        <td>83.5%</td>
-                        <td>85.3%</td>
-                        <td><strong>87.9%</strong></td>
+                        <td rowspan="2">Peptides-func</td>
+                        <td>Average Precision</td>
+                        <td>0.59</td>
+                        <td>0.54</td>
+                        <td>0.58</td>
+                        <td>0.69</td>
+                        <td><strong>0.77</strong></td>
                     </tr>
                     <tr>
-                        <td>F1-Score</td>
-                        <td>74.8%</td>
-                        <td>78.3%</td>
-                        <td>82.1%</td>
-                        <td>84.6%</td>
-                        <td><strong>86.7%</strong></td>
-                    </tr>
-                    <tr>
-                        <td rowspan="2">WN18RR</td>
-                        <td>Accuracy</td>
-                        <td>82.3%</td>
-                        <td>84.7%</td>
-                        <td>88.1%</td>
-                        <td>89.4%</td>
-                        <td><strong>91.2%</strong></td>
-                    </tr>
-                    <tr>
-                        <td>F1-Score</td>
-                        <td>81.5%</td>
-                        <td>83.9%</td>
-                        <td>87.6%</td>
-                        <td>88.9%</td>
-                        <td><strong>90.5%</strong></td>
-                    </tr>
-                    <tr>
-                        <td rowspan="2">NELL-995</td>
-                        <td>Accuracy</td>
-                        <td>73.8%</td>
-                        <td>75.2%</td>
-                        <td>79.3%</td>
-                        <td>82.1%</td>
-                        <td><strong>84.7%</strong></td>
-                    </tr>
-                    <tr>
-                        <td>F1-Score</td>
-                        <td>72.9%</td>
-                        <td>74.6%</td>
-                        <td>78.8%</td>
-                        <td>81.4%</td>
-                        <td><strong>83.9%</strong></td>
+                        <td rowspan="2">Peptides-struct</td>
+                        <td>MAE</td>
+                        <td>0.34</td>
+                        <td>0.35</td>
+                        <td>0.34</td>
+                        <td>0.24</td>
+                        <td><strong>0.30</strong></td>
                     </tr>
                 </tbody>
             </table>
